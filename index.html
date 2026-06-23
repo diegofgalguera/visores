@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Visores Fair Play · TDLA 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ───────────────────────────────────────────────── */
+    :root {
+      --blue:   #5A7BB5;   /* logo blue  */
+      --blue-l: #7B9DD0;
+      --blue-bg:#EDF2FA;
+      --red:    #E05748;   /* logo red   */
+      --red-bg: #FEF1EF;
+      --yellow: #E8B835;   /* logo yellow */
+      --yel-bg: #FEF8E4;
+      --green:  #16a34a;
+      --grn-bg: #f0fdf4;
+      --gray-50:  #f8fafc;
+      --gray-100: #f5f7fa;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --white:  #ffffff;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 24px rgba(0,0,0,.12);
+      --transition: .18s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Reset ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      color: var(--gray-900);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    input, select, textarea, button { font-family: inherit; font-size: inherit; }
+    a { color: var(--blue); text-decoration: none; }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────── */
+    .header {
+      background: #ffffff;
+      color: var(--gray-900);
+      padding: 0 16px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(to right, var(--red) 0%, var(--yellow) 50%, var(--blue) 100%) 1;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+    }
+    .header-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      color: var(--gray-900);
+    }
+    .header-sub {
+      font-size: 11px;
+      color: var(--gray-400);
+      font-weight: 400;
+      display: block;
+      margin-top: -2px;
+    }
+    .header-btn {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      color: var(--gray-700, #374151);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .header-btn:hover { background: var(--gray-200); }
+
+    /* ── Main content ────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Views (only one visible at a time) ───────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Card ────────────────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────────── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition);
+      text-align: center;
+    }
+    .btn:active { transform: scale(.98); opacity: .9; }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
+    .btn-danger  { background: var(--red);  color: white; }
+    .btn-ghost   { background: transparent; color: var(--blue); padding: 10px; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Form controls ───────────────────────────────────────────── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      color: var(--gray-900);
+      background: var(--white);
+      outline: none;
+      transition: border-color var(--transition);
+      -webkit-appearance: none;
+    }
+    .form-control:focus { border-color: var(--blue-l); }
+    select.form-control { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+    /* ── Login screen ────────────────────────────────────────────── */
+    .login-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 32px;
+      background: #ffffff;
+    }
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .login-logo-text {
+      text-align: left;
+      line-height: 1.1;
+    }
+    .login-logo-text .brand-top {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-400);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .login-logo-text .brand-main {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--gray-900);
+      letter-spacing: -.5px;
+      display: block;
+    }
+    .login-divider {
+      width: 48px;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(to right, var(--red), var(--yellow), var(--blue));
+      margin: 16px auto 24px;
+    }
+    .login-title {
+      color: var(--gray-900);
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .login-subtitle {
+      color: var(--gray-400);
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 2px 24px rgba(0,0,0,.09);
+      border: 1px solid var(--gray-200);
+    }
+    .login-card .form-label { color: var(--gray-600); }
+
+    /* ── Progress bar ────────────────────────────────────────────── */
+    .progress-wrap {
+      margin-bottom: 20px;
+    }
+    .progress-label {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 4px;
+      transition: width .3s ease;
+    }
+    .step-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      transition: background var(--transition);
+    }
+    .step-dot.active { background: var(--blue); }
+    .step-dot.done   { background: var(--green); }
+
+    /* ── Section header ──────────────────────────────────────────── */
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+
+    /* ── Home grid ───────────────────────────────────────────────── */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .home-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 16px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .home-card:active { transform: scale(.97); }
+    .home-card.blue { border-color: var(--blue); background: var(--blue-bg); }
+    .home-card.red  { border-color: var(--red);  background: var(--red-bg);  }
+    .home-card.icon { font-size: 32px; display: block; margin-bottom: 10px; }
+    .home-card h3   { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+    .home-card p    { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+    /* ── Rubric ──────────────────────────────────────────────────── */
+    .rubric-item {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    .rubric-item-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .rubric-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rubric-item.special .rubric-num { background: var(--blue); color: white; }
+    .rubric-item.penalty .rubric-num { background: var(--red);  color: white; }
+    .rubric-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-800);
+      line-height: 1.4;
+    }
+    .rubric-hint {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 3px;
+    }
+    .rubric-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .rubric-btn {
+      padding: 10px 4px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+      color: var(--gray-600);
+    }
+    .rubric-btn:active { transform: scale(.96); }
+    .rubric-btn.no   { border-color: var(--red);    background: var(--red-bg);   color: var(--red); }
+    .rubric-btn.half { border-color: var(--yellow);  background: var(--yel-bg);   color: var(--yellow); }
+    .rubric-btn.yes  { border-color: var(--green);   background: var(--grn-bg);   color: var(--green); }
+    .rubric-btn.no.selected   { background: var(--red);    color: white; }
+    .rubric-btn.half.selected { background: var(--yellow);  color: white; }
+    .rubric-btn.yes.selected  { background: var(--green);   color: white; }
+
+    /* Penalty counter */
+    .penalty-counter {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .counter-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-200);
+      background: white;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+      transition: all var(--transition);
+    }
+    .counter-btn.minus { border-color: var(--red);   color: var(--red);   }
+    .counter-btn.plus  { border-color: var(--blue);  color: var(--blue);  }
+    .counter-btn:active { transform: scale(.9); }
+    .counter-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--gray-900);
+      min-width: 32px;
+      text-align: center;
+    }
+    .counter-label {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* ── Summary ─────────────────────────────────────────────────── */
+    .summary-score {
+      background: linear-gradient(135deg, var(--blue) 0%, #1d4ed8 100%);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .score-number {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .score-label {
+      font-size: 14px;
+      opacity: .8;
+      margin-top: 4px;
+    }
+    .score-breakdown {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+      font-size: 13px;
+      opacity: .85;
+    }
+    .summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 14px;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-key { color: var(--gray-600); flex: 1; }
+    .summary-val { font-weight: 600; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-0   { background: var(--red-bg);   color: var(--red);   }
+    .badge-1   { background: var(--yel-bg);  color: var(--yellow); }
+    .badge-2   { background: var(--grn-bg);  color: var(--green);  }
+    .badge-pen { background: var(--red-bg);   color: var(--red);   }
+    .badge-bon { background: var(--blue-bg);  color: var(--blue);  }
+
+    /* ── Evaluaciones list ───────────────────────────────────────── */
+    .eval-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--blue);
+    }
+    .eval-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .eval-team { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+    .eval-score-chip {
+      background: var(--blue);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .eval-meta { font-size: 13px; color: var(--gray-400); }
+    .eval-meta span + span::before { content: ' · '; }
+
+    /* ── Admin ───────────────────────────────────────────────────── */
+    .visor-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .visor-row:last-child { border-bottom: none; }
+    .visor-name { font-weight: 600; color: var(--gray-900); }
+    .visor-user { font-size: 13px; color: var(--gray-400); }
+    .visor-actions { display: flex; gap: 8px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag-admin { background: var(--blue-bg); color: var(--blue); }
+    .tag-active { background: var(--grn-bg); color: var(--green); }
+    .tag-inactive { background: var(--gray-100); color: var(--gray-400); }
+
+    /* ── Toast ───────────────────────────────────────────────────── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      width: calc(100% - 32px);
+      max-width: 400px;
+    }
+    .toast {
+      background: var(--gray-800);
+      color: white;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp .25s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toast.success { background: var(--green); }
+    .toast.error   { background: var(--red);   }
+    .toast.warning { background: var(--yellow); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Loader ──────────────────────────────────────────────────── */
+    .loader-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      gap: 16px;
+    }
+    .loader-overlay.hidden { display: none; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 15px; color: var(--gray-600); font-weight: 500; }
+
+    /* ── Chip tabs ───────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-chip {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--gray-200);
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
+    }
+    .tab-chip.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+    /* ── Misc ────────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--gray-200);
+      margin: 16px 0;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray-400);
+    }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--gray-600);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 20px;
+    }
+    .pending-banner {
+      background: var(--yel-bg);
+      border: 1.5px solid var(--yellow);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--yellow);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .pending-banner button {
+      background: var(--yellow);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .config-note {
+      background: var(--blue-bg);
+      border: 1.5px solid var(--blue-l);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--blue);
+      margin-bottom: 16px;
+    }
+
+    /* ── Dashboard ──────────────────────────────────────────────── */
+    .dash-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .dash-stat {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .dash-stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1;
+    }
+    .dash-stat-label {
+      font-size: 11px;
+      color: var(--gray-400);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    .dash-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin: 16px 0 10px;
+    }
+    /* Ranking bars */
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .rank-pos {
+      width: 22px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rank-bar-wrap {
+      height: 8px;
+      background: var(--gray-100);
+      border-radius: 4px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .rank-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .5s ease;
+    }
+    .rank-score {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-700, #374151);
+      flex-shrink: 0;
+      min-width: 36px;
+      text-align: right;
+    }
+    /* Criteria heatmap */
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .crit-cell {
+      background: white;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .crit-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .crit-info { flex: 1; min-width: 0; }
+    .crit-label {
+      font-size: 11px;
+      color: var(--gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .crit-avg {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .crit-bar-wrap {
+      height: 4px;
+      background: var(--gray-100);
+      border-radius: 2px;
+      margin-top: 4px;
+    }
+    .crit-bar { height: 100%; border-radius: 2px; }
+
+    /* ── Offline badge ───────────────────────────────────────────── */
+    .offline-badge {
+      background: var(--red);
+      color: white;
+      border: none;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: none;
+    }
+    .offline-badge.visible { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ── Loader ────────────────────────────────────────────────────── -->
+<div class="loader-overlay hidden" id="loader">
+  <div class="spinner"></div>
+  <div class="loader-text" id="loader-text">Cargando…</div>
+</div>
+
+<!-- ── Toast container ───────────────────────────────────────────── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- LOGIN VIEW                                                     -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="view active" id="view-login">
+  <div class="login-wrap">
+    <!-- TDLA Logo -->
+    <div class="login-logo">
+      <svg viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg" style="width:52px;height:65px;flex-shrink:0;">
+        <!-- Red flame (bottom, largest) -->
+        <path d="M4,82 C0,62 8,40 26,26 C38,17 44,8 40,0 C56,14 60,40 46,62 C38,74 22,80 4,82 Z" fill="#E05748"/>
+        <!-- Yellow flame (middle) -->
+        <path d="M20,66 C16,47 24,26 42,12 C52,4 58,0 56,0 C70,14 72,38 58,60 C50,72 34,70 20,66 Z" fill="#E8B835"/>
+        <!-- Blue flame (top, smallest) -->
+        <path d="M38,50 C34,34 42,14 58,4 C65,0 70,0 70,0 C78,14 76,36 62,54 C55,62 46,56 38,50 Z" fill="#5A7BB5"/>
+      </svg>
+      <div class="login-logo-text">
+        <span class="brand-top">Torneo de la</span>
+        <span class="brand-main">Amistad</span>
+      </div>
+    </div>
+    <div class="login-divider"></div>
+    <div class="login-title">Visores Fair Play</div>
+    <div class="login-subtitle">TDLA Puebla 2026</div>
+
+    <div class="login-card">
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+        <input type="text" class="form-control" id="login-username" placeholder="tu.usuario" autocomplete="username" autocapitalize="none" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary" id="login-btn" onclick="doLogin()">Iniciar sesión</button>
+
+      <div id="login-error" style="color:var(--red);font-size:13px;text-align:center;margin-top:12px;display:none;"></div>
+
+      <!-- Config URL (hidden until needed) -->
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-200);">
+        <div style="font-size:11px;color:var(--gray-400);text-align:center;margin-bottom:8px;">URL del servidor (solo primera vez)</div>
+        <input type="url" class="form-control" id="api-url-input" placeholder="https://script.google.com/…" style="font-size:12px;" />
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="saveApiUrl()">Guardar URL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- MAIN APP SHELL (header + content)                             -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="view app" id="view-app" style="display:none;">
+
+  <!-- Header -->
+  <div class="header" id="app-header">
+    <div>
+      <div class="header-title" id="header-title">Visores Fair Play</div>
+      <span class="header-sub" id="header-sub">TDLA Puebla 2026</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="offline-badge" id="offline-badge">SIN RED</span>
+      <button class="header-btn" id="header-action-btn" onclick="headerAction()">Salir</button>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div class="main" id="app-content">
+
+    <!-- ── HOME ──────────────────────────────────────────────────── -->
+    <div class="view" id="view-home">
+      <div id="pending-banner-wrap"></div>
+
+      <div class="section-title" id="home-greeting">¡Hola!</div>
+      <div class="section-sub" id="home-username">Visor Fair Play</div>
+
+      <div class="home-grid">
+        <div class="home-card blue" onclick="startEvaluation()">
+          <span class="home-card icon">📋</span>
+          <h3>Nueva Evaluación</h3>
+          <p>Calificar un partido</p>
+        </div>
+        <div class="home-card" onclick="showView('view-evaluaciones'); loadEvaluaciones()">
+          <span class="home-card icon">📊</span>
+          <h3>Mis Evaluaciones</h3>
+          <p>Ver evaluaciones de hoy</p>
+        </div>
+      </div>
+
+      <div id="admin-home-section" style="display:none;">
+        <div class="divider"></div>
+        <div class="card-title" style="font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Administración</div>
+        <div class="home-grid">
+          <div class="home-card" onclick="showView('view-admin-visores'); loadVisores()">
+            <span class="home-card icon">👥</span>
+            <h3>Visores</h3>
+            <p>Gestionar usuarios</p>
+          </div>
+          <div class="home-card" onclick="showView('view-admin-evaluaciones'); loadAllEvaluaciones()">
+            <span class="home-card icon">🏆</span>
+            <h3>Resultados</h3>
+            <p>Ver todas las evaluaciones</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:4px;">
+        <div class="card-title">Rúbrica activa · TDLA 2026</div>
+        <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">
+          10 criterios de conducta + Bonus Fair Play.<br>
+          Escala: <strong style="color:var(--red)">0 NO</strong> · <strong style="color:var(--yellow)">1 Más o menos</strong> · <strong style="color:var(--green)">2 Sí</strong><br>
+          Penalización: <strong style="color:var(--red)">−3 pts</strong> por incidente.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NUEVA EVALUACIÓN STEP 1: Datos del partido ─────────────── -->
+    <div class="view" id="view-step1">
+      <button class="back-btn" onclick="showHome()">← Inicio</button>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Paso 1 de 3 · Datos del partido</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+      </div>
+
+      <div class="section-title">Información del partido</div>
+      <div class="section-sub">Completa los datos antes de evaluar</div>
+
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Disciplina</label>
+          <select class="form-control" id="f-disciplina">
+            <option value="">— Seleccionar —</option>
+            <option>Fútbol</option>
+            <option>Basketball</option>
+            <option>Natación</option>
+            <option>Padel</option>
+            <option>Atletismo</option>
+            <option>Tae Kwon Do</option>
+            <option>Tennis</option>
+            <option>Golf</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Equipo / Colegio evaluado</label>
+          <select class="form-control" id="f-equipo">
+            <option value="">— Seleccionar colegio —</option>
+            <option>Andes Puebla</option>
+            <option>Cumbres International School</option>
+            <option>Alpes</option>
+            <option>Highlands International School</option>
+            <option>Oxford School</option>
+            <option>Irish Institute</option>
+            <option>Pinecrest</option>
+            <option>Everest School</option>
+            <option>Himalaya International School</option>
+            <option>Interamericano</option>
+            <option>Maddox School</option>
+            <option>Del Bosque International School</option>
+            <option>Grove School</option>
+            <option>Kilimanjaro School</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-control" id="f-categoria">
+            <option value="">— Seleccionar —</option>
+            <option>Varonil Infantil</option>
+            <option>Femenil Infantil</option>
+            <option>Varonil Juvenil A</option>
+            <option>Femenil Juvenil A</option>
+            <option>Varonil Juvenil B</option>
+            <option>Femenil Juvenil B</option>
+            <option>Varonil Prepa</option>
+            <option>Femenil Prepa</option>
+            <option>Mixto</option>
+            <option>Otra</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Fecha y hora</label>
+          <input type="datetime-local" class="form-control" id="f-datetime" />
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToStep2()">Continuar →</button>
+    </div>
+
+    <!-- ── NUEVA EVALUACIÓN STEP 2: Rúbrica ───────────────────────── -->
+    <div class="view" id="view-step2">
+      <button class="back-btn" onclick="showView('view-step1')">← Atrás</button>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Paso 2 de 3 · Evaluar criterios</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+      </div>
+
+      <div class="section-title" id="step2-team-name">Evaluación</div>
+      <div class="section-sub">Califica cada criterio del 0 al 2</div>
+
+      <div id="rubric-container">
+        <!-- Generated by JS -->
+      </div>
+
+      <button class="btn btn-primary" onclick="goToStep3()">Ver resumen →</button>
+      <div style="height:16px;"></div>
+    </div>
+
+    <!-- ── NUEVA EVALUACIÓN STEP 3: Resumen ───────────────────────── -->
+    <div class="view" id="view-step3">
+      <button class="back-btn" onclick="showView('view-step2')">← Ajustar</button>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Paso 3 de 3 · Confirmar y enviar</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="summary-score" id="summary-score-block">
+        <div class="score-number" id="summary-total">0</div>
+        <div class="score-label">puntos Fair Play</div>
+        <div class="score-breakdown">
+          <span>Criterios: <strong id="sb-criteria">0</strong></span>
+          <span>Penalizaciones: <strong id="sb-penalties">0</strong></span>
+          <span>Bonus: <strong id="sb-bonus">0</strong></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Datos del partido</div>
+        <div class="summary-row"><span class="summary-key">Equipo</span><span class="summary-val" id="s-equipo">—</span></div>
+        <div class="summary-row"><span class="summary-key">Disciplina</span><span class="summary-val" id="s-disciplina">—</span></div>
+        <div class="summary-row"><span class="summary-key">Categoría</span><span class="summary-val" id="s-categoria">—</span></div>
+        <div class="summary-row"><span class="summary-key">Fecha / Hora</span><span class="summary-val" id="s-datetime">—</span></div>
+        <div class="summary-row"><span class="summary-key">Visor</span><span class="summary-val" id="s-visor">—</span></div>
+      </div>
+
+      <div class="card" id="summary-criteria-card">
+        <div class="card-title">Detalle de criterios</div>
+        <div id="summary-criteria-list"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Observaciones (opcional)</label>
+        <textarea class="form-control" id="f-notas" rows="3" placeholder="Anota cualquier observación relevante del partido…" style="resize:none;"></textarea>
+      </div>
+
+      <button class="btn btn-primary" onclick="submitEvaluation()">✓ Enviar evaluación</button>
+      <div style="height:16px;"></div>
+    </div>
+
+    <!-- ── MIS EVALUACIONES ───────────────────────────────────────── -->
+    <div class="view" id="view-evaluaciones">
+      <button class="back-btn" onclick="showHome()">← Inicio</button>
+      <div class="section-title">Mis evaluaciones de hoy</div>
+      <div class="section-sub" id="eval-date-label">—</div>
+      <div id="eval-list-container">
+        <div class="empty-state"><div class="icon">📋</div><p>Cargando…</p></div>
+      </div>
+    </div>
+
+    <!-- ── ADMIN: VISORES ─────────────────────────────────────────── -->
+    <div class="view" id="view-admin-visores">
+      <button class="back-btn" onclick="showHome()">← Inicio</button>
+      <div class="section-title">Gestión de visores</div>
+      <div class="section-sub">Panel de administración</div>
+
+      <button class="btn btn-primary" style="margin-bottom:16px;" onclick="showAddVisor()">+ Agregar visor</button>
+
+      <!-- Add/Edit form (hidden by default) -->
+      <div class="card" id="visor-form-card" style="display:none;">
+        <div class="card-title" id="visor-form-title">Nuevo visor</div>
+        <div class="form-group">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control" id="vf-nombre" placeholder="Ej. Ana García" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Usuario</label>
+          <input type="text" class="form-control" id="vf-username" placeholder="ana.garcia" autocapitalize="none" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-control" id="vf-password" placeholder="••••••••" />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">
+            <input type="checkbox" id="vf-admin" /> Es administrador
+          </label>
+        </div>
+        <div class="divider"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="saveVisor()">Guardar</button>
+          <button class="btn btn-secondary" style="flex:1;" onclick="cancelVisorForm()">Cancelar</button>
+        </div>
+        <input type="hidden" id="vf-edit-username" />
+      </div>
+
+      <div class="card">
+        <div id="visores-list">
+          <div class="empty-state"><div class="icon">👥</div><p>Cargando visores…</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADMIN: TODAS LAS EVALUACIONES ─────────────────────────── -->
+    <div class="view" id="view-admin-evaluaciones">
+      <button class="back-btn" onclick="showHome()">← Inicio</button>
+      <div class="section-title">Todas las evaluaciones</div>
+      <div class="section-sub" id="admin-eval-date-label">Hoy</div>
+
+      <div class="tabs" id="admin-eval-tabs">
+        <div class="tab-chip active" onclick="filterAdminEval('all', this)">Todas</div>
+        <div class="tab-chip" onclick="filterAdminEval('Fútbol', this)">Fútbol</div>
+        <div class="tab-chip" onclick="filterAdminEval('Basketball', this)">Basketball</div>
+        <div class="tab-chip" onclick="filterAdminEval('Natación', this)">Natación</div>
+        <div class="tab-chip" onclick="filterAdminEval('Padel', this)">Padel</div>
+        <div class="tab-chip" onclick="filterAdminEval('Tennis', this)">Tennis</div>
+        <div class="tab-chip" onclick="filterAdminEval('Golf', this)">Golf</div>
+        <div class="tab-chip" onclick="filterAdminEval('Atletismo', this)">Atletismo</div>
+        <div class="tab-chip" onclick="filterAdminEval('Tae Kwon Do', this)">TKD</div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard-wrap" style="display:none;">
+        <div class="dash-stats" id="dash-stats"></div>
+
+        <div class="dash-section-title">Ranking por colegio</div>
+        <div class="card" style="padding:16px;">
+          <div id="dash-ranking"></div>
+        </div>
+
+        <div class="dash-section-title">Promedio por criterio</div>
+        <div class="criteria-grid" id="dash-criteria"></div>
+
+        <div class="dash-section-title">Evaluaciones individuales</div>
+      </div>
+
+      <div id="admin-eval-list"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /view-app -->
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                                     -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<script>
+
+/* ─────────────────────────────────────────────────────────────────
+   CONFIG & STATE
+───────────────────────────────────────────────────────────────── */
+const STORAGE_KEY_USER    = 'tdla_user';
+const STORAGE_KEY_API_URL = 'tdla_api_url';
+const STORAGE_KEY_PENDING = 'tdla_pending';
+
+const RUBRIC_ITEMS = [
+  { id: 1,  text: 'Saludo inicial y saludo final',                             hint: 'Jugadores saludan antes y después del partido' },
+  { id: 2,  text: 'Respeto a las decisiones del árbitro',                      hint: 'Ningún jugador o entrenador cuestiona al árbitro' },
+  { id: 3,  text: 'No faltar al respeto al árbitro',                           hint: 'Sin gestos ni palabras irrespetuosas hacia el árbitro' },
+  { id: 4,  text: 'Porra respetuosa',                                          hint: 'La porra anima sin provocar al rival' },
+  { id: 5,  text: 'No insultos ni peleas entre porras',                        hint: 'Las familias mantienen ambiente de sana competencia' },
+  { id: 6,  text: 'Limpieza en gradas',                                        hint: 'La zona de la porra queda limpia al terminar' },
+  { id: 7,  text: 'Celebrar de manera respetuosa los logros',                  hint: 'Sin burlas ni provocaciones al festejar' },
+  { id: 8,  text: 'Saludo inicial y final (entrenadores / cuerpo técnico)',     hint: 'El cuerpo técnico saluda deportivamente' },
+  { id: 9,  text: 'No pelear o insultar a ninguna de las partes del juego',    hint: 'Jugadores, staff y familias sin conflictos' },
+  { id: 10, text: 'Limpieza y cuidado de la cancha / instalaciones',           hint: 'Se cuidan las instalaciones durante y después del juego' },
+  { id: 11, text: 'Bonus Fair Play',                                            hint: 'Acto positivo extraordinario de cualquier parte', special: true },
+];
+
+const PENALTY_EXAMPLES = 'Tarjeta amarilla · Tarjeta roja · Expulsión de jugador · Expulsión de entrenador · Incidente grave';
+
+let state = {
+  user: null,
+  password: '',   // stored at login, used for authenticated API calls
+  apiUrl: '',
+  currentEval: {
+    disciplina: '', equipo: '', categoria: '', datetime: '',
+    criteria: new Array(11).fill(null), // indices 0-10 → items 1-11
+    penalties: 0,
+    notas: ''
+  },
+  allEvaluaciones: [],
+  adminFilterDisc: 'all',
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────────────── */
+window.addEventListener('load', () => {
+  // Load API URL
+  state.apiUrl = localStorage.getItem(STORAGE_KEY_API_URL) || '';
+  if (state.apiUrl) {
+    document.getElementById('api-url-input').value = state.apiUrl;
+  }
+
+  // Set default datetime
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('f-datetime').value =
+    `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  // Check session
+  const saved = localStorage.getItem(STORAGE_KEY_USER);
+  if (saved) {
+    state.user = JSON.parse(saved);
+    enterApp();
+  }
+
+  // Offline indicator
+  window.addEventListener('online',  () => { document.getElementById('offline-badge').classList.remove('visible'); tryFlushPending(); });
+  window.addEventListener('offline', () => { document.getElementById('offline-badge').classList.add('visible'); });
+  if (!navigator.onLine) document.getElementById('offline-badge').classList.add('visible');
+
+  buildRubric();
+});
+
+/* ─────────────────────────────────────────────────────────────────
+   VIEW MANAGEMENT
+───────────────────────────────────────────────────────────────── */
+function showView(id) {
+  document.querySelectorAll('#app-content .view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); window.scrollTo(0,0); }
+}
+
+function showHome() {
+  showView('view-home');
+  updateHeaderForHome();
+  checkPendingBanner();
+}
+
+function updateHeaderForHome() {
+  document.getElementById('header-title').textContent = 'Visores Fair Play';
+  document.getElementById('header-sub').textContent = 'TDLA Puebla 2026';
+  document.getElementById('header-action-btn').textContent = 'Salir';
+  document.getElementById('header-action-btn').onclick = doLogout;
+}
+
+function headerAction() { doLogout(); }
+
+/* ─────────────────────────────────────────────────────────────────
+   AUTH
+───────────────────────────────────────────────────────────────── */
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!username || !password) { errEl.textContent = 'Ingresa usuario y contraseña.'; errEl.style.display = 'block'; return; }
+  if (!state.apiUrl) { errEl.textContent = 'Primero configura la URL del servidor.'; errEl.style.display = 'block'; return; }
+
+  setLoading(true, 'Verificando credenciales…');
+  try {
+    const res = await apiGet({ action: 'login', username, password });
+    if (res.error) { errEl.textContent = res.error; errEl.style.display = 'block'; return; }
+    state.user = res.user;
+    state.password = password;   // keep in memory for API calls
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(state.user));
+    enterApp();
+  } catch (e) {
+    errEl.textContent = 'No se pudo conectar al servidor. Verifica la URL.';
+    errEl.style.display = 'block';
+  } finally {
+    setLoading(false);
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem(STORAGE_KEY_USER);
+  state.user = null;
+  document.getElementById('view-login').classList.add('active');
+  document.getElementById('view-app').style.display = 'none';
+  document.getElementById('view-login').style.display = '';
+  document.getElementById('login-password').value = '';
+}
+
+function enterApp() {
+  document.getElementById('view-login').classList.remove('active');
+  document.getElementById('view-login').style.display = 'none';
+  document.getElementById('view-app').style.display = 'flex';
+  document.getElementById('view-app').classList.add('active');
+
+  // Greeting
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? '¡Buenos días' : hour < 19 ? '¡Buenas tardes' : '¡Buenas noches';
+  document.getElementById('home-greeting').textContent = `${greet}, ${state.user.nombre.split(' ')[0]}!`;
+  document.getElementById('home-username').textContent = `${state.user.username} · Visor Fair Play`;
+
+  // Admin section
+  document.getElementById('admin-home-section').style.display = state.user.role === 'admin' ? 'block' : 'none';
+
+  updateHeaderForHome();
+  showHome();
+}
+
+function saveApiUrl() {
+  const url = document.getElementById('api-url-input').value.trim();
+  if (!url) { toast('Ingresa una URL válida', 'error'); return; }
+  state.apiUrl = url;
+  localStorage.setItem(STORAGE_KEY_API_URL, url);
+  toast('URL guardada ✓', 'success');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   EVALUATION FLOW
+───────────────────────────────────────────────────────────────── */
+function startEvaluation() {
+  // Reset
+  state.currentEval = {
+    disciplina: '', equipo: '', categoria: '', datetime: '',
+    criteria: new Array(11).fill(null),
+    penalties: 0, notas: ''
+  };
+  resetRubricUI();
+  document.getElementById('f-penalizaciones-count').textContent = '0';
+  document.getElementById('f-notas').value = '';
+  // Reset datetime to now
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('f-datetime').value =
+    `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  showView('view-step1');
+}
+
+function goToStep2() {
+  const disc  = document.getElementById('f-disciplina').value;
+  const equipo = document.getElementById('f-equipo').value;
+  const cat   = document.getElementById('f-categoria').value;
+  const dt    = document.getElementById('f-datetime').value;
+
+  if (!disc || !equipo || !cat || !dt) {
+    toast('Completa todos los campos antes de continuar', 'error'); return;
+  }
+  state.currentEval.disciplina = disc;
+  state.currentEval.equipo     = equipo;
+  state.currentEval.categoria  = cat;
+  state.currentEval.datetime   = dt;
+
+  document.getElementById('step2-team-name').textContent = equipo;
+  showView('view-step2');
+}
+
+function goToStep3() {
+  // Check all criteria answered
+  const unanswered = state.currentEval.criteria.findIndex(v => v === null);
+  if (unanswered !== -1) {
+    toast(`Califica el criterio #${unanswered + 1} antes de continuar`, 'error'); return;
+  }
+  buildSummary();
+  showView('view-step3');
+}
+
+async function submitEvaluation() {
+  state.currentEval.notas = document.getElementById('f-notas').value.trim();
+  const evalData = buildEvalPayload();
+
+  if (!navigator.onLine || !state.apiUrl) {
+    // Queue locally
+    queuePending(evalData);
+    toast('Sin conexión — evaluación guardada localmente', 'warning');
+    showHome();
+    return;
+  }
+
+  setLoading(true, 'Enviando evaluación…');
+  try {
+    const res = await apiPost({ action: 'submitEvaluation', data: evalData });
+    if (res.error) { toast('Error: ' + res.error, 'error'); return; }
+    toast('¡Evaluación enviada con éxito! ✓', 'success');
+    showHome();
+  } catch (e) {
+    queuePending(evalData);
+    toast('Error de red — evaluación guardada localmente', 'warning');
+    showHome();
+  } finally {
+    setLoading(false);
+  }
+}
+
+function buildEvalPayload() {
+  const e = state.currentEval;
+  const criteriaTotal = e.criteria.reduce((s, v) => s + (v || 0), 0);
+  const penaltyTotal  = e.penalties * -3;
+  const total         = criteriaTotal + penaltyTotal;
+
+  return {
+    timestamp:     new Date().toISOString(),
+    visor:         state.user.username,
+    visorNombre:   state.user.nombre,
+    disciplina:    e.disciplina,
+    equipo:        e.equipo,
+    categoria:     e.categoria,
+    datetime:      e.datetime,
+    c1:  e.criteria[0],  c2:  e.criteria[1],  c3:  e.criteria[2],
+    c4:  e.criteria[3],  c5:  e.criteria[4],  c6:  e.criteria[5],
+    c7:  e.criteria[6],  c8:  e.criteria[7],  c9:  e.criteria[8],
+    c10: e.criteria[9],  c11: e.criteria[10],
+    penalizaciones: e.penalties,
+    criteriaTotal, penaltyTotal, total,
+    notas: e.notas,
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RUBRIC UI
+───────────────────────────────────────────────────────────────── */
+function buildRubric() {
+  const container = document.getElementById('rubric-container');
+  container.innerHTML = '';
+
+  RUBRIC_ITEMS.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'rubric-item' + (item.special ? ' special' : '');
+    div.id = `rubric-item-${idx}`;
+    div.innerHTML = `
+      <div class="rubric-item-header">
+        <div class="rubric-num">${item.id}</div>
+        <div>
+          <div class="rubric-text">${item.text}</div>
+          <div class="rubric-hint">${item.hint}</div>
+        </div>
+      </div>
+      <div class="rubric-buttons">
+        <button class="rubric-btn no"   onclick="setScore(${idx}, 0)">0 · NO</button>
+        <button class="rubric-btn half" onclick="setScore(${idx}, 1)">1 · Más o menos</button>
+        <button class="rubric-btn yes"  onclick="setScore(${idx}, 2)">2 · SÍ</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  // Penalty item
+  const penDiv = document.createElement('div');
+  penDiv.className = 'rubric-item penalty';
+  penDiv.innerHTML = `
+    <div class="rubric-item-header">
+      <div class="rubric-num">12</div>
+      <div>
+        <div class="rubric-text">Penalizaciones</div>
+        <div class="rubric-hint">${PENALTY_EXAMPLES}</div>
+      </div>
+    </div>
+    <div class="penalty-counter">
+      <button class="counter-btn minus" onclick="changePenalty(-1)">−</button>
+      <div>
+        <div class="counter-value" id="f-penalizaciones-count">0</div>
+        <div class="counter-label">incidentes (−3 c/u)</div>
+      </div>
+      <button class="counter-btn plus" onclick="changePenalty(1)">+</button>
+    </div>
+  `;
+  container.appendChild(penDiv);
+}
+
+function setScore(idx, value) {
+  state.currentEval.criteria[idx] = value;
+  const item = document.getElementById(`rubric-item-${idx}`);
+  const btns = item.querySelectorAll('.rubric-btn');
+  btns[0].classList.toggle('selected', value === 0);
+  btns[1].classList.toggle('selected', value === 1);
+  btns[2].classList.toggle('selected', value === 2);
+}
+
+function changePenalty(delta) {
+  state.currentEval.penalties = Math.max(0, state.currentEval.penalties + delta);
+  document.getElementById('f-penalizaciones-count').textContent = state.currentEval.penalties;
+}
+
+function resetRubricUI() {
+  RUBRIC_ITEMS.forEach((_, idx) => {
+    const item = document.getElementById(`rubric-item-${idx}`);
+    if (item) item.querySelectorAll('.rubric-btn').forEach(b => b.classList.remove('selected'));
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   SUMMARY
+───────────────────────────────────────────────────────────────── */
+function buildSummary() {
+  const e = state.currentEval;
+  const criteriaTotal = e.criteria.reduce((s, v) => s + (v || 0), 0);
+  const penaltyTotal  = e.penalties * -3;
+  const total         = criteriaTotal + penaltyTotal;
+
+  document.getElementById('summary-total').textContent = total;
+  document.getElementById('sb-criteria').textContent  = '+' + criteriaTotal;
+  document.getElementById('sb-penalties').textContent = penaltyTotal;
+  document.getElementById('sb-bonus').textContent     = e.criteria[10] > 0 ? '+' + e.criteria[10] : '0';
+
+  document.getElementById('s-equipo').textContent    = e.equipo;
+  document.getElementById('s-disciplina').textContent = e.disciplina;
+  document.getElementById('s-categoria').textContent  = e.categoria;
+  document.getElementById('s-datetime').textContent   = formatDatetime(e.datetime);
+  document.getElementById('s-visor').textContent      = state.user.nombre;
+
+  // Criteria detail
+  const list = document.getElementById('summary-criteria-list');
+  list.innerHTML = '';
+  RUBRIC_ITEMS.forEach((item, idx) => {
+    const val = e.criteria[idx];
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    const cls = val === 0 ? 'badge-0' : val === 1 ? 'badge-1' : 'badge-2';
+    const label = val === 0 ? '0 NO' : val === 1 ? '1 ≈' : '2 SÍ';
+    row.innerHTML = `
+      <span class="summary-key">${item.id}. ${item.text}</span>
+      <span class="badge ${cls}">${label}</span>
+    `;
+    list.appendChild(row);
+  });
+
+  // Penalty row
+  if (e.penalties > 0) {
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    row.innerHTML = `
+      <span class="summary-key">12. Penalizaciones (×${e.penalties})</span>
+      <span class="badge badge-pen">${penaltyTotal}</span>
+    `;
+    list.appendChild(row);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   MIS EVALUACIONES
+───────────────────────────────────────────────────────────────── */
+async function loadEvaluaciones() {
+  const today = new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('eval-date-label').textContent = today;
+
+  const container = document.getElementById('eval-list-container');
+  container.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Cargando…</p></div>';
+
+  // Show pending first
+  const pending = getPending().filter(p => p.visor === state.user.username);
+
+  try {
+    const res = await apiGet({ action: 'getEvaluaciones', username: state.user.username, password: getCachedPassword(), date: todayStr() });
+    let evals = res.evaluaciones || [];
+    renderEvalList(container, evals, pending);
+  } catch (e) {
+    if (pending.length > 0) {
+      renderEvalList(container, [], pending);
+    } else {
+      container.innerHTML = '<div class="empty-state"><div class="icon">📵</div><p>Sin conexión. Las evaluaciones del día aparecen cuando hay red.</p></div>';
+    }
+  }
+}
+
+function renderEvalList(container, evals, pending = []) {
+  container.innerHTML = '';
+  if (evals.length === 0 && pending.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No has registrado evaluaciones hoy.</p></div>';
+    return;
+  }
+
+  pending.forEach(e => {
+    container.appendChild(makeEvalCard(e, true));
+  });
+  evals.forEach(e => {
+    container.appendChild(makeEvalCard(e, false));
+  });
+}
+
+function makeEvalCard(e, isPending) {
+  const card = document.createElement('div');
+  card.className = 'eval-card';
+  if (isPending) card.style.borderLeftColor = 'var(--yellow)';
+  card.innerHTML = `
+    <div class="eval-header">
+      <div class="eval-team">${e.equipo || e.Equipo || '—'}</div>
+      <div class="eval-score-chip">${e.total ?? e.Total ?? '?'} pts</div>
+    </div>
+    <div class="eval-meta">
+      <span>${e.disciplina || e.Disciplina || '—'}</span>
+      <span>${e.categoria || e.Categoria || '—'}</span>
+      ${isPending ? '<span style="color:var(--yellow);">⏳ Pendiente de envío</span>' : ''}
+    </div>
+  `;
+  return card;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   ADMIN: VISORES
+───────────────────────────────────────────────────────────────── */
+async function loadVisores() {
+  const container = document.getElementById('visores-list');
+  container.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Cargando…</p></div>';
+  try {
+    const res = await apiGet({ action: 'getVisores', username: state.user.username, password: getCachedPassword() });
+    renderVisores(res.visores || []);
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error al cargar visores.</p></div>';
+  }
+}
+
+function renderVisores(visores) {
+  const container = document.getElementById('visores-list');
+  container.innerHTML = '';
+  if (!visores.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>No hay visores registrados.</p></div>';
+    return;
+  }
+  visores.forEach(v => {
+    const row = document.createElement('div');
+    row.className = 'visor-row';
+    row.innerHTML = `
+      <div>
+        <div class="visor-name">${v.nombre}</div>
+        <div class="visor-user">@${v.username}
+          ${v.role === 'admin' ? '<span class="tag tag-admin" style="margin-left:6px;">Admin</span>' : ''}
+          <span class="tag ${v.active ? 'tag-active' : 'tag-inactive'}" style="margin-left:4px;">${v.active ? 'Activo' : 'Inactivo'}</span>
+        </div>
+      </div>
+      <div class="visor-actions">
+        <button class="btn btn-secondary btn-sm" onclick='editVisor(${JSON.stringify(v)})'>Editar</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function showAddVisor() {
+  document.getElementById('visor-form-title').textContent = 'Nuevo visor';
+  document.getElementById('vf-nombre').value = '';
+  document.getElementById('vf-username').value = '';
+  document.getElementById('vf-password').value = '';
+  document.getElementById('vf-admin').checked = false;
+  document.getElementById('vf-edit-username').value = '';
+  document.getElementById('visor-form-card').style.display = 'block';
+}
+
+function editVisor(v) {
+  document.getElementById('visor-form-title').textContent = 'Editar visor';
+  document.getElementById('vf-nombre').value   = v.nombre;
+  document.getElementById('vf-username').value = v.username;
+  document.getElementById('vf-password').value = '';
+  document.getElementById('vf-admin').checked  = v.role === 'admin';
+  document.getElementById('vf-edit-username').value = v.username;
+  document.getElementById('visor-form-card').style.display = 'block';
+  document.getElementById('visor-form-card').scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelVisorForm() {
+  document.getElementById('visor-form-card').style.display = 'none';
+}
+
+async function saveVisor() {
+  const nombre   = document.getElementById('vf-nombre').value.trim();
+  const username = document.getElementById('vf-username').value.trim();
+  const password = document.getElementById('vf-password').value;
+  const isAdmin  = document.getElementById('vf-admin').checked;
+  const editUser = document.getElementById('vf-edit-username').value;
+
+  if (!nombre || !username) { toast('Nombre y usuario son obligatorios', 'error'); return; }
+
+  setLoading(true, 'Guardando…');
+  try {
+    const res = await apiPost({
+      action: editUser ? 'updateVisor' : 'addVisor',
+      adminUsername: state.user.username,
+      adminPassword: getCachedPassword(),
+      visor: { nombre, username, password, role: isAdmin ? 'admin' : 'visor', active: true, editUsername: editUser }
+    });
+    if (res.error) { toast('Error: ' + res.error, 'error'); return; }
+    toast('Visor guardado ✓', 'success');
+    cancelVisorForm();
+    loadVisores();
+  } catch (e) {
+    toast('Error de red', 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   ADMIN: ALL EVALUACIONES
+───────────────────────────────────────────────────────────────── */
+async function loadAllEvaluaciones() {
+  const today = new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('admin-eval-date-label').textContent = today;
+  document.getElementById('admin-eval-list').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Cargando…</p></div>';
+
+  try {
+    const res = await apiGet({ action: 'getAllEvaluaciones', username: state.user.username, password: getCachedPassword(), date: todayStr() });
+    state.allEvaluaciones = res.evaluaciones || [];
+    renderAdminEval(state.allEvaluaciones);
+  } catch (e) {
+    document.getElementById('admin-eval-list').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error al cargar evaluaciones.</p></div>';
+  }
+}
+
+function filterAdminEval(disc, chipEl) {
+  document.querySelectorAll('#admin-eval-tabs .tab-chip').forEach(c => c.classList.remove('active'));
+  chipEl.classList.add('active');
+  state.adminFilterDisc = disc;
+  const filtered = disc === 'all' ? state.allEvaluaciones : state.allEvaluaciones.filter(e => (e.disciplina || e.Disciplina) === disc);
+  renderAdminEval(filtered);
+}
+
+function renderAdminEval(evals) {
+  const dashWrap = document.getElementById('dashboard-wrap');
+  const container = document.getElementById('admin-eval-list');
+
+  if (!evals.length) {
+    dashWrap.style.display = 'none';
+    container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Sin evaluaciones.</p></div>';
+    return;
+  }
+
+  dashWrap.style.display = 'block';
+  buildDashboard(evals);
+
+  container.innerHTML = '';
+  evals.forEach(e => {
+    const card = document.createElement('div');
+    card.className = 'eval-card';
+    const total = e.total ?? e.Total ?? '?';
+    const color = total >= 16 ? 'var(--green)' : total >= 10 ? 'var(--yellow)' : 'var(--red)';
+    card.style.borderLeftColor = color;
+    card.innerHTML = `
+      <div class="eval-header">
+        <div class="eval-team">${e.equipo || e.Equipo || '—'}</div>
+        <div class="eval-score-chip" style="background:${color};">${total} pts</div>
+      </div>
+      <div class="eval-meta">
+        <span>${e.disciplina || e.Disciplina || '—'}</span>
+        <span>${e.categoria || e.Categoria || '—'}</span>
+        <span>Visor: ${e.visorNombre || e.VisorNombre || e.visor || '—'}</span>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   DASHBOARD
+───────────────────────────────────────────────────────────────── */
+function buildDashboard(evals) {
+  const n = evals.length;
+  const getVal = (e, k) => {
+    const v = e[k] ?? e[k.charAt(0).toUpperCase() + k.slice(1)];
+    return v !== undefined && v !== '' ? Number(v) : null;
+  };
+
+  // ── Stats cards ──────────────────────────────────────────────
+  const totals = evals.map(e => getVal(e, 'total')).filter(v => v !== null);
+  const avg = totals.length ? (totals.reduce((a,b) => a+b, 0) / totals.length).toFixed(1) : '—';
+
+  // Best team by avg total
+  const byTeam = {};
+  evals.forEach(e => {
+    const t = e.equipo || e.Equipo || '?';
+    const v = getVal(e, 'total');
+    if (v === null) return;
+    if (!byTeam[t]) byTeam[t] = [];
+    byTeam[t].push(v);
+  });
+  const teamAvgs = Object.entries(byTeam).map(([name, vals]) => ({
+    name, avg: vals.reduce((a,b)=>a+b,0)/vals.length, count: vals.length
+  })).sort((a,b) => b.avg - a.avg);
+  const bestTeam = teamAvgs[0]?.name.split(' ').slice(0,2).join(' ') || '—';
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="dash-stat">
+      <div class="dash-stat-value">${n}</div>
+      <div class="dash-stat-label">Evaluaciones</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-value" style="color:var(--blue);">${avg}</div>
+      <div class="dash-stat-label">Promedio</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-value" style="font-size:13px;padding-top:4px;color:var(--green);">${bestTeam}</div>
+      <div class="dash-stat-label">Mejor equipo</div>
+    </div>
+  `;
+
+  // ── Ranking ───────────────────────────────────────────────────
+  const maxAvg = teamAvgs[0]?.avg || 1;
+  const rankEl = document.getElementById('dash-ranking');
+  rankEl.innerHTML = '';
+  teamAvgs.forEach((t, i) => {
+    const pct = Math.round((t.avg / 22) * 100); // max possible = 22
+    const color = t.avg >= 16 ? '#16a34a' : t.avg >= 10 ? '#E8B835' : '#E05748';
+    const row = document.createElement('div');
+    row.className = 'rank-row';
+    row.innerHTML = `
+      <div class="rank-pos">${i+1}</div>
+      <div class="rank-info">
+        <div class="rank-name">${t.name}</div>
+        <div class="rank-bar-wrap">
+          <div class="rank-bar" style="width:${pct}%;background:${color};"></div>
+        </div>
+      </div>
+      <div class="rank-score">${t.avg.toFixed(1)}</div>
+    `;
+    rankEl.appendChild(row);
+  });
+
+  // ── Criteria averages ─────────────────────────────────────────
+  const CRIT_SHORT = [
+    'Saludo inicial/final', 'Resp. árbitro', 'No faltar al árbitro',
+    'Porra respetuosa', 'Sin insultos porras', 'Limpieza gradas',
+    'Celebración respet.', 'Saludo técnico', 'Sin peleas/insultos',
+    'Limpieza cancha', 'Bonus Fair Play'
+  ];
+  const critEl = document.getElementById('dash-criteria');
+  critEl.innerHTML = '';
+  for (let i = 1; i <= 11; i++) {
+    const key = `c${i}`;
+    const vals = evals.map(e => getVal(e, key)).filter(v => v !== null);
+    const cavg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    const pct  = Math.round((cavg / 2) * 100);
+    const color = cavg >= 1.5 ? '#16a34a' : cavg >= 1 ? '#E8B835' : '#E05748';
+    const bgColor = cavg >= 1.5 ? '#f0fdf4' : cavg >= 1 ? '#FEF8E4' : '#FEF1EF';
+    const cell = document.createElement('div');
+    cell.className = 'crit-cell';
+    cell.innerHTML = `
+      <div class="crit-num" style="background:${bgColor};color:${color};">${i}</div>
+      <div class="crit-info">
+        <div class="crit-label">${CRIT_SHORT[i-1]}</div>
+        <div class="crit-avg" style="color:${color};">${cavg.toFixed(1)}</div>
+        <div class="crit-bar-wrap">
+          <div class="crit-bar" style="width:${pct}%;background:${color};"></div>
+        </div>
+      </div>
+    `;
+    critEl.appendChild(cell);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   OFFLINE QUEUE
+───────────────────────────────────────────────────────────────── */
+function getPending() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_PENDING) || '[]'); } catch { return []; }
+}
+function setPending(arr) {
+  localStorage.setItem(STORAGE_KEY_PENDING, JSON.stringify(arr));
+}
+function queuePending(evalData) {
+  const pending = getPending();
+  pending.push(evalData);
+  setPending(pending);
+  checkPendingBanner();
+}
+
+function checkPendingBanner() {
+  const pending = getPending();
+  const wrap = document.getElementById('pending-banner-wrap');
+  if (pending.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `
+    <div class="pending-banner">
+      ⏳ ${pending.length} evaluación(es) pendiente(s) de envío
+      <button onclick="tryFlushPending()">Enviar ahora</button>
+    </div>
+  `;
+}
+
+async function tryFlushPending() {
+  const pending = getPending();
+  if (!pending.length || !navigator.onLine || !state.apiUrl) return;
+  setLoading(true, `Enviando ${pending.length} evaluación(es) pendiente(s)…`);
+  let failed = [];
+  for (const evalData of pending) {
+    try {
+      const res = await apiPost({ action: 'submitEvaluation', data: evalData });
+      if (res.error) failed.push(evalData);
+    } catch { failed.push(evalData); }
+  }
+  setPending(failed);
+  setLoading(false);
+  checkPendingBanner();
+  if (failed.length === 0) toast(`✓ Todas las evaluaciones enviadas`, 'success');
+  else toast(`${pending.length - failed.length} enviadas, ${failed.length} fallaron`, 'warning');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   API HELPERS
+───────────────────────────────────────────────────────────────── */
+async function apiGet(params) {
+  const url = new URL(state.apiUrl);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  return res.json();
+}
+
+async function apiPost(body) {
+  // Use text/plain to avoid CORS preflight — Apps Script doesn't respond to OPTIONS.
+  const res = await fetch(state.apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
+function getCachedPassword() {
+  return state.password || '';
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   UTILITY
+───────────────────────────────────────────────────────────────── */
+function setLoading(on, text = 'Cargando…') {
+  const el = document.getElementById('loader');
+  document.getElementById('loader-text').textContent = text;
+  el.classList.toggle('hidden', !on);
+}
+
+function toast(msg, type = '') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function formatDatetime(dt) {
+  if (!dt) return '—';
+  const d = new Date(dt);
+  return d.toLocaleString('es-MX', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function todayStr() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+}
+
+// Keyboard support — enter on login fields
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('view-login').classList.contains('active')) doLogin();
+  }
+});
+</script>
+</body>
+</html>
